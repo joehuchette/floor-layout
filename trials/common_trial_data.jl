@@ -1,7 +1,5 @@
 using FloorLayout, JuMP, CPLEX
 
-const β = 5
-
 const benchmarks = [:hp,
                     :apte,
                     :xerox,
@@ -65,3 +63,32 @@ const UB = Dict(:hp => 62105.380137346525,
                 :Bozer91 => 23090.180383161554,
                 :Armour62_1 => 22679.140100826913,
                 :Armour62_2 => 1.8652032684550043e6)
+
+function jitter_data!(prob::Problem, γ)
+    if γ == 0
+        return prob
+    end
+    Lˣ, Lʸ = prob.W, prob.H
+    N = prob.N
+    β = prob.aspect
+
+    α = copy(prob.area)
+    α = α.*(1 + γ*randn(N))
+    @assert all(α .>= 0)
+
+    rat = sum(α) / sum(prob.area)
+
+    prob.area = α
+    prob.W *= sqrt(rat)
+    prob.H *= sqrt(rat)
+
+    prob.wub = min(sqrt(α.*β), Lˣ)
+    prob.hub = min(sqrt(α.*β), Lʸ)
+    prob.wlb = α ./ prob.wub
+    prob.hlb = α ./ prob.hub
+
+    for i in 1:N, j in (i+1):N
+        prob.c[i,j] *= (1+γ*randn())
+    end
+    return prob
+end
