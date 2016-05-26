@@ -5,7 +5,7 @@ const fp = open("results/$(filename).txt", "w+")
 
 solver = CplexSolver(CPX_PARAM_MIQCPSTRAT=2, CPX_PARAM_NODELIM=0)
 
-function run_test(bench, trial::Trial)
+function run_test(bench, trial::Approach)
     model = Model(solver=solver)
     prob = get_problem_data(bench, β)
     vars = base_model(model, prob, trial.formulation)
@@ -33,7 +33,7 @@ end
 
 for bench in benchmarks
     println(fp, "bench = $bench, β = $β")
-    for trial in trials
+    for trial in approaches
         run_test(bench, trial)
         gc()
     end

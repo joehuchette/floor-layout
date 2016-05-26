@@ -5,7 +5,7 @@ names = [:U, :Up, :BLDP1, :BLDP1p, :SP, :SPp, :SPpVI, :SPpVI3, :RU, :RUpVI, :RUp
 for bench in benchmarks
     sbench = string(bench)
     try mkdir(sbench) end
-    for (trial,name) in zip(trials,names)
+    for (trial,name) in zip(approaches,names)
         model = Model(solver=CplexSolver(CPX_PARAM_MIQCPSTRAT=2))
         prob = get_problem_data(bench, β)
         vars = base_model(model, prob, trial.formulation)

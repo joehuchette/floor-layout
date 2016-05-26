@@ -14,7 +14,8 @@ const benchmarks = [:hp,
                     :Armour62_1,
                     :Armour62_2]
 
-type Trial
+type Approach
+    name::String
     formulation::Formulation
     cuts::Vector{Cut}
 end
@@ -38,19 +39,19 @@ three_cuts = [ThreeBoxObjective1(CutCount{1}()),
               ThreeBoxObjective3(CutCount{1}()),
               ThreeBoxObjective4(CutCount{1}())]
 
-U      = Trial(Unary(),         [])
-Up     = Trial(Unary(),         lit_cuts)
-BLDP1  = Trial(BinaryGray(),    [])
-BLDP1p = Trial(BinaryGray(),    lit_cuts)
-SP     = Trial(BinaryBlack(),   [SequencePair()])
-SPp    = Trial(BinaryBlack(),   [SequencePair();lit_cuts])
-SPpVI  = Trial(BinaryBlack(),   [SequencePair();FLP_cuts])
-SPpVI3 = Trial(BinaryBlack(),   [SequencePair();FLP_cuts;three_cuts])
-RU     = Trial(Partition4Bit(), [])
-RUpVI  = Trial(Partition4Bit(), [FLP_cuts;UpperBound108(CutCount{1}())])
-RUpVI3 = Trial(Partition4Bit(), [FLP_cuts;three_cuts;UpperBound108(CutCount{1}())])
+U      = Approach("U",      Unary(),         [])
+Up     = Approach("U+",     Unary(),         lit_cuts)
+BLDP1  = Approach("BLDP1",  BinaryGray(),    [])
+BLDP1p = Approach("BLDP1+", BinaryGray(),    lit_cuts)
+SP     = Approach("SP",     BinaryBlack(),   [SequencePair()])
+SPp    = Approach("SP+",    BinaryBlack(),   [SequencePair();lit_cuts])
+SPpVI  = Approach("SP+VI",  BinaryBlack(),   [SequencePair();FLP_cuts])
+SPpVI3 = Approach("SP+VI3", BinaryBlack(),   [SequencePair();FLP_cuts;three_cuts])
+RU     = Approach("RU",     Partition4Bit(), [])
+RUpVI  = Approach("RU+VI",  Partition4Bit(), [FLP_cuts;UpperBound108(CutCount{1}())])
+RUpVI3 = Approach("RU+VI3", Partition4Bit(), [FLP_cuts;three_cuts;UpperBound108(CutCount{1}())])
 
-trials = [U, Up, BLDP1, BLDP1p, SP, SPp, SPpVI, SPpVI3, RU, RUpVI, RUpVI3]
+approaches = [U, Up, BLDP1, BLDP1p, SP, SPp, SPpVI, SPpVI3, RU, RUpVI, RUpVI3]
 
 gap(U,L) = 100*(U-L) / U
 const UB = Dict(:hp => 62105.380137346525,
