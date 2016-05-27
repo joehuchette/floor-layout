@@ -13,7 +13,7 @@ const benchmarks = [:hp,
                     :Armour62_2]
 
 type Approach
-    name::String
+    name::AbstractString
     formulation::Formulation
     cuts::Vector{Cut}
 end
@@ -49,7 +49,17 @@ RU     = Approach("RU",     Partition4Bit(), [])
 RUpVI  = Approach("RU+VI",  Partition4Bit(), [FLP_cuts;UpperBound108(CutCount{1}())])
 RUpVI3 = Approach("RU+VI3", Partition4Bit(), [FLP_cuts;three_cuts;UpperBound108(CutCount{1}())])
 
-approaches = [U, Up, BLDP1, BLDP1p, SP, SPp, SPpVI, SPpVI3, RU, RUpVI, RUpVI3]
+approaches = Dict("U"=>U,
+                  "Up"=>Up,
+                  "BLDP1"=>BLDP1,
+                  "BLDP1p"=>BLDP1p,
+                  "SP"=>SP,
+                  "SPp"=>SPp,
+                  "SPpVI"=>SPpVI,
+                  "SPpVI3"=>SPpVI3,
+                  "RU"=>RU,
+                  "RUpVI"=>RUpVI,
+                  "RUpVI3"=>RUpVI3)
 
 gap(U,L) = 100*(U-L) / U
 const UB = Dict(:hp => 62105.380137346525,
@@ -73,7 +83,10 @@ function jitter_data!(prob::Problem, γ)
     β = prob.aspect
 
     α = copy(prob.area)
-    α = α.*(1 + γ*randn(N))
+    while true
+        α = α.*(1 + γ*randn(N))
+        all(α .>= 0) && break
+    end
     @assert all(α .>= 0)
 
     rat = sum(α) / sum(prob.area)
